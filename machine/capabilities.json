@@ -1,0 +1,12 @@
+{
+  "schema": "glaciereq.repo-capabilities.v1",
+  "repository": "GlacierEQ/salesforce-crm-action-authority",
+  "capabilities": [
+    {
+      "id": "crm-action-authority",
+      "name": "CRM Action Authority",
+      "status": "SCAFFOLD",
+      "module": "src/crm_action_authority.py"
+    }
+  ]
+}
