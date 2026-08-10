@@ -1,154 +1,117 @@
 from __future__ import annotations
-import importlib
-import inspect
-import unittest
-import sys
-from pathlib import Path
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "src"))
 
-class AdversarialEliteTests(unittest.TestCase):
-    def _load(self):
-        errors = []
-        for name in ('crm_action_authority', "src." + 'crm_action_authority'):
-            try:
-                return importlib.import_module(name)
-            except Exception as e:
-                errors.append(f"{name}: {e}")
-        self.fail("; ".join(errors))
+import math
 
-    def test_module_importable(self):
-        mod = self._load()
-        public = [n for n in dir(mod) if not n.startswith("_")]
-        self.assertGreater(len(public), 0, "module exposes no public names")
+from crm_action_authority import (
+    Action,
+    ActionGrant,
+    CrmActionAuthority,
+    CrmActionAuthorityRequest,
+    Decision,
+)
 
-    def test_refuse_bad_import_path_does_not_shadow(self):
-        with self.assertRaises(ModuleNotFoundError):
-            importlib.import_module("src.__elite_does_not_exist_" + 'crm_action_authority')
 
-    def test_central_mechanism_refuse_or_edge(self):
-        """Exercise shipped refuse/edge paths when present; never crash open."""
-        mod = self._load()
-        exercised = False
+def make_grant(**overrides):
+    data = dict(
+        grant_id="g-adv",
+        issuer="external-crm-action-authority",
+        actor_id="agent-1",
+        subject_id="case-1",
+        object_types=("Contact",),
+        actions=(Action.UPDATE,),
+        field_scopes=("Contact.Email",),
+        issued_at=10.0,
+        not_after=20.0,
+        nonce="adv-1",
+        allow_irreversible=False,
+    )
+    data.update(overrides)
+    return ActionGrant(**data)
 
-        # plan(connector, action) refuse nonsense connector
-        for cname, cls in inspect.getmembers(mod, inspect.isclass):
-            if cname.startswith("_"):
-                continue
-            # include re-exported central classes (not pure stdlib typing)
-            mname = getattr(cls, "__module__", None) or ""
-            if mname.startswith("typing") or mname in {"builtins", "collections", "pathlib", "json", "sys", "os"}:
-                continue
-            if getattr(mod, cname, None) is not cls and mname not in {mod.__name__, getattr(mod, "__package__", None)}:
-                continue
-            try:
-                sig = inspect.signature(cls)
-                if any(
-                    p.default is inspect.Parameter.empty and p.name != "self"
-                    and p.kind not in (p.VAR_POSITIONAL, p.VAR_KEYWORD)
-                    for p in sig.parameters.values()
-                ):
-                    continue
-                inst = cls()
-            except Exception:
-                continue
-            plan = getattr(inst, "plan", None)
-            if callable(plan):
-                try:
-                    out = plan("__elite_no_such_connector__", "delete")
-                    self.assertIsNotNone(out)
-                    if isinstance(out, dict):
-                        # refuse should not silently allow destructive unknown work
-                        allowed = out.get("allowed")
-                        if allowed is True:
-                            self.assertTrue(
-                                out.get("human_approved") is True
-                                or out.get("status") in {"REFUSED", "DENIED", "ERROR", "UNKNOWN"},
-                                f"plan allowed unknown connector: {out!r}",
-                            )
-                        exercised = True
-                    else:
-                        exercised = True
-                except Exception as e:
-                    # hard fail-closed is acceptable refuse
-                    exercised = True
-                    self.assertIsInstance(e, Exception)
-            # authorize/decide refuse
-            for meth in ("authorize", "decide", "check"):
-                fn = getattr(inst, meth, None)
-                if not callable(fn):
-                    continue
-                try:
-                    ps = inspect.signature(fn)
-                    req = [
-                        p for p in ps.parameters.values()
-                        if p.name != "self" and p.default is inspect.Parameter.empty
-                        and p.kind not in (p.VAR_POSITIONAL, p.VAR_KEYWORD)
-                    ]
-                    if req:
-                        continue
-                    out = fn()
-                    self.assertIsNotNone(out)
-                    exercised = True
-                except TypeError:
-                    continue
-                except Exception:
-                    exercised = True
 
-        # module-level schedule([]) / health edges
-        sched = getattr(mod, "schedule", None)
-        if callable(sched):
-            try:
-                out = sched([], 1.0)
-                self.assertIsInstance(out, dict)
-                self.assertIn("plan", out)
-                exercised = True
-            except TypeError:
-                try:
-                    out = sched([])
-                    self.assertIsNotNone(out)
-                    exercised = True
-                except Exception:
-                    exercised = True
-            except Exception:
-                exercised = True
+def make_req(**overrides):
+    data = dict(
+        actor_id="agent-1",
+        subject_id="case-1",
+        object_type="Contact",
+        action=Action.UPDATE,
+        record_id="c-1",
+        changes={"Email": "new@example.test"},
+        before={"Email": "old@example.test"},
+        grant=make_grant(),
+        now=15.0,
+    )
+    data.update(overrides)
+    return CrmActionAuthorityRequest(**data)
 
-        for edge_fn, args in (
-            ("anomaly_score", (1e9,)),
-            ("thermal_margin", (-40.0,)),
-            ("simulate_rack", (0, 0.0)),
-        ):
-            fn = getattr(mod, edge_fn, None)
-            if not callable(fn):
-                continue
-            try:
-                out = fn(*args)
-                self.assertIsNotNone(out)
-                exercised = True
-            except Exception:
-                exercised = True
 
-        # metrics / efficiency attributes on zero-arg engines
-        for cname, cls in inspect.getmembers(mod, inspect.isclass):
-            if cname.startswith("_"):
-                continue
-            try:
-                inst = cls()
-            except Exception:
-                continue
-            metrics = getattr(inst, "metrics", None)
-            if isinstance(metrics, dict) and metrics:
-                self.assertIn(next(iter(metrics)), metrics)
-                exercised = True
-                break
+def assert_refused(**overrides):
+    receipt = CrmActionAuthority().evaluate(make_req(**overrides))
+    assert receipt.decision is Decision.REFUSE
+    return receipt
 
-        if not exercised:
-            # last resort: public API still rejects nonsense attribute assignment theater
-            public = [n for n in dir(mod) if not n.startswith("_")]
-            self.assertGreater(len(public), 0)
-            with self.assertRaises((AttributeError, TypeError, ImportError, ValueError, KeyError)):
-                getattr(mod, "__elite_missing_surface__")
 
-if __name__ == "__main__":
-    unittest.main()
+def test_wrong_actor_cannot_borrow_grant():
+    assert "grant_actor_mismatch" in assert_refused(actor_id="agent-2").reasons
+
+
+def test_wrong_subject_cannot_borrow_grant():
+    assert "grant_subject_mismatch" in assert_refused(subject_id="case-2").reasons
+
+
+def test_wrong_object_cannot_borrow_grant():
+    assert "grant_object_scope_missing" in assert_refused(object_type="Account").reasons
+
+
+def test_wrong_action_cannot_borrow_grant():
+    assert "grant_action_scope_missing" in assert_refused(action=Action.DELETE).reasons
+
+
+def test_expired_grant_fails_closed():
+    assert "grant_expired" in assert_refused(now=21.0).reasons
+
+
+def test_future_grant_fails_closed():
+    assert "grant_not_active" in assert_refused(now=9.0).reasons
+
+
+def test_non_finite_payload_is_rejected():
+    receipt = assert_refused(changes={"Email": math.nan}, before={"Email": "old@example.test"})
+    assert "non_canonical_payload" in receipt.reasons
+
+
+def test_delete_requires_before_image_and_explicit_delete_scope():
+    delete_grant = make_grant(
+        actions=(Action.DELETE,),
+        field_scopes=("*",),
+        nonce="delete-1",
+    )
+    receipt = CrmActionAuthority().evaluate(
+        make_req(action=Action.DELETE, changes={}, before={}, grant=delete_grant)
+    )
+    assert receipt.decision is Decision.REFUSE
+    assert "before_image_required_for_delete" in receipt.reasons
+
+
+def test_send_cannot_hide_missing_recipient():
+    send_grant = make_grant(
+        actions=(Action.SEND_MESSAGE,),
+        field_scopes=("*",),
+        allow_irreversible=True,
+        nonce="send-adv",
+    )
+    receipt = CrmActionAuthority().evaluate(
+        make_req(
+            action=Action.SEND_MESSAGE,
+            changes={"body": "Hello", "channel": "email"},
+            before={},
+            grant=send_grant,
+        )
+    )
+    assert receipt.decision is Decision.REFUSE
+    assert receipt.reasons[0].startswith("send_fields_missing")
+
+
+def test_wrong_issuer_fails_closed():
+    receipt = assert_refused(grant=make_grant(issuer="leaf-local-signer"))
+    assert "grant_issuer_mismatch" in receipt.reasons

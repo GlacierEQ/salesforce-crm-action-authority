@@ -1,22 +1,57 @@
 {
-  "schema": "glaciereq.repo-target-contract.v1",
+  "schema": "glaciereq.repo-target-contract.v2",
   "identity": {
     "repository_id": "GlacierEQ/salesforce-crm-action-authority",
     "family": "elite-estate"
   },
   "current": {
-    "state": "PROMOTED",
+    "state": "IMPLEMENTED",
     "implemented": true,
-    "tested": true,
+    "tested": false,
     "deployed": false
   },
-  "nonclaims": [
-    "no employer affiliation",
-    "no production deployment without receipt"
-  ],
-  "donor_plan": {
-    "mode": "none",
-    "donors": []
+  "mechanism": {
+    "name": "CRM Action Authority",
+    "actions": [
+      "CREATE",
+      "UPDATE",
+      "DELETE",
+      "SEND_MESSAGE"
+    ],
+    "grant_contract": [
+      "actor-bound",
+      "subject-bound",
+      "object-scoped",
+      "action-scoped",
+      "field-scoped",
+      "time-bounded",
+      "one-time nonce",
+      "explicit irreversible-send authority"
+    ],
+    "reversibility": {
+      "CREATE": "reverse DELETE receipt",
+      "UPDATE": "restore changed fields from before-image",
+      "DELETE": "recreate from before-image",
+      "SEND_MESSAGE": "non-reversible; explicit authority required"
+    }
   },
-  "frozen_at": "2026-08-10T10:11Z"
+  "invariants": [
+    "no grant means no mutation",
+    "external send defaults to REFUSE",
+    "grant replay is refused",
+    "out-of-scope fields are refused",
+    "update/delete require reconstructible reverse state",
+    "non-canonical payloads fail closed",
+    "promotion authority is external to the public leaf"
+  ],
+  "promotion": {
+    "require_current_head_implementation_proof": true,
+    "require_external_authority": true,
+    "require_canonical_position": true
+  },
+  "nonclaims": [
+    "no Salesforce affiliation",
+    "no production deployment",
+    "no claim of Salesforce internal authorization equivalence"
+  ]
 }
