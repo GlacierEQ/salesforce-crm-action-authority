@@ -45,6 +45,14 @@ It binds every admitted action to a fresh external grant containing:
 8. **Non-finite or unsupported payload values fail closed rather than being stringified.**
 9. **Receipts are deterministically SHA-256 bound to the authorized decision inputs.**
 
+## Why this is technically interesting
+
+The design combines capability attenuation, workflow provenance, replay control, reversibility, and deterministic receipts in one authorization boundary. A CRM agent can reason freely, but side-effect authority remains narrow and machine-verifiable.
+
+`UPDATE` and `DELETE` are not merely permission-checked: they are refused unless a credible reverse operation can be constructed *before* admission. `SEND_MESSAGE` is modeled as an explicitly irreversible class rather than being treated as an ordinary field mutation.
+
+See `ARCHITECTURE.md` for the expert design, threat model, receipt semantics, and production-boundary analysis.
+
 ## Sandbox campaign proof
 
 `scripts/operate.py` exercises three concrete paths:
@@ -63,19 +71,35 @@ This models an application-campaign CRM agent with a **no-send default**.
 | Direct operate path | `scripts/operate.py` |
 | Behavioral tests | `tests/test_crm_action_authority.py` |
 | Adversarial tests | `tests/test_adversarial.py` |
+| Expert architecture | `ARCHITECTURE.md` |
+| Verification matrix | `machine/verification-matrix.json` |
+| Machine architecture | `machine/architecture.json` |
+| Source-bound proof | `machine/implementation-proof.json` |
+| Sanitized proof receipt | `machine/proof_receipt.json` |
+| Operability receipt | `machine/operability_receipt.json` |
 | Target contract | `machine/target-contract.json` |
 | Excellence truth state | `machine/excellence-state.json` |
 | Engineering handoff | `DEV_UP_INSTRUCTIONS.md` |
 
 ## Current proof state
 
-The domain mechanism is **IMPLEMENTED** and the stale Wave C generic promotion is revoked.
+The repository-local mechanism is **PROOF_REPRODUCED**.
 
-Promotion is intentionally withheld until:
+- source-bound implementation proof: `machine/implementation-proof.json`
+- canonical implementation source SHA: `0f81c93c94bfbf6cecf050d6b782ab7473b74bb2bddec8559506d38f29d1d4a6`
+- behavioral cases: **8**
+- domain adversarial cases: **10**
+- total tests: **18/18 PASS**
+- direct operate flow: **PASS**
+- exact GitHub Actions source commit: `b31016add09695a113c2f78a2b266af92dec15c9`
+- stale scaffold proof and leaf-local promotion authority: **removed**
 
-- a current-head source-bound implementation proof is generated
-- promotion authority is supplied externally rather than minted by the public leaf
-- canonical estate position is resolved
+Only estate-level gates remain before any future `PROMOTED` claim:
+
+- external authenticated promotion authority
+- canonical estate-position resolution
+
+Those gates are intentionally outside the public leaf; the repository does not mint its own promotion authority.
 
 ## Non-claims
 

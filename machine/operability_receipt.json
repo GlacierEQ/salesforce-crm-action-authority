@@ -1,0 +1,26 @@
+{
+  "schema": "glaciereq.operability-receipt.v2",
+  "repository": "GlacierEQ/salesforce-crm-action-authority",
+  "source_sha": "0f81c93c94bfbf6cecf050d6b782ab7473b74bb2bddec8559506d38f29d1d4a6",
+  "entry": "scripts/operate.py",
+  "result": "PASS",
+  "scenarios": [
+    {
+      "name": "scoped_update",
+      "decision": "ALLOW",
+      "digest": "db71e098b58e321f78084df27076ae60d5ce86a432462b89891ca2ca935f2123",
+      "reverse_bound": true
+    },
+    {
+      "name": "no_send_default",
+      "decision": "REFUSE",
+      "digest": "36016d19e37833137fb1cdd8c9f7145eeb8e4cf52dcf924dd7e42aaf33a337f0"
+    },
+    {
+      "name": "explicit_irreversible_send",
+      "decision": "ALLOW",
+      "digest": "246e355d8d83fe1e98b6b54bd7700eb1d69ec5efa13adbf8b0a522d5851c305a",
+      "reversible": false
+    }
+  ]
+}

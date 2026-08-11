@@ -5,8 +5,9 @@
     {
       "id": "crm-action-authority",
       "name": "CRM Action Authority",
-      "status": "IMPLEMENTED",
+      "status": "PROVEN",
       "module": "src/crm_action_authority.py",
+      "implementation_proof_ref": "machine/implementation-proof.json",
       "guarantees": [
         "actor and workflow-subject binding",
         "object/action/field capability attenuation",

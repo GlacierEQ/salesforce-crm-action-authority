@@ -1,0 +1,25 @@
+{
+  "schema": "glaciereq.proof-receipt.v2",
+  "repository": "GlacierEQ/salesforce-crm-action-authority",
+  "source_sha": "0f81c93c94bfbf6cecf050d6b782ab7473b74bb2bddec8559506d38f29d1d4a6",
+  "source_commit": "b31016add09695a113c2f78a2b266af92dec15c9",
+  "workflow_run_id": 31460725409,
+  "environment": {
+    "runner": "ubuntu-latest",
+    "python": "3.12"
+  },
+  "commands": [
+    "python -m pytest -q",
+    "python scripts/operate.py"
+  ],
+  "behavioral_cases": 8,
+  "adversarial_cases": 10,
+  "result": "PASS",
+  "sanitized": true,
+  "absolute_local_paths": false,
+  "limitations": [
+    "reference implementation",
+    "no vendor API side effects",
+    "not production deployed"
+  ]
+}

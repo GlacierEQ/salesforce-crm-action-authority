@@ -1,0 +1,13 @@
+{
+  "schema": "glaciereq.implementation-proof.v1",
+  "repository": "GlacierEQ/salesforce-crm-action-authority",
+  "source_sha": "0f81c93c94bfbf6cecf050d6b782ab7473b74bb2bddec8559506d38f29d1d4a6",
+  "result": "PASS",
+  "scaffold": false,
+  "behavioral_cases": 8,
+  "adversarial_cases": 10,
+  "direct_operate": true,
+  "proof_origin": "github-actions-plus-exact-blob-reproduction",
+  "source_commit": "b31016add09695a113c2f78a2b266af92dec15c9",
+  "workflow_run_id": 31460725409
+}
