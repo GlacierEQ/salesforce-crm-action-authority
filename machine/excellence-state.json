@@ -1,67 +1,38 @@
 {
   "schema": "glaciereq.repo-excellence-state.v1",
   "repository": "GlacierEQ/salesforce-crm-action-authority",
-  "principal_state": "IMPLEMENTED",
+  "principal_state": "PROOF_REPRODUCED",
   "gates": {
-    "IDENTITY_RESOLVED": {
-      "status": "PASS",
-      "evidence": "github GlacierEQ/salesforce-crm-action-authority"
-    },
-    "PROBLEM_VERIFIED": {
-      "status": "PASS",
-      "evidence": "README autonomous CRM action governance bottleneck"
-    },
-    "TARGET_CONTRACT_FROZEN": {
-      "status": "PASS",
-      "evidence": "machine/target-contract.json v2"
-    },
-    "DONOR_PLAN_RESOLVED": {
-      "status": "PASS",
-      "evidence": "fail-closed canonicalization and external authority semantics"
-    },
-    "VERTICAL_SLICE_ALIVE": {
-      "status": "PASS",
-      "evidence": "real authority evaluator + direct sandbox operate flow"
-    },
-    "CENTRAL_MECHANISM_PRESENT": {
-      "status": "PASS",
-      "evidence": "scoped one-time grants + reverse-operation receipts + no-send default"
-    },
-    "DETERMINISTIC_PROOF_GREEN": {
-      "status": "PENDING"
-    },
-    "ADVERSARIAL_SURVIVAL": {
-      "status": "PENDING"
-    },
-    "OPERABLE_AND_OBSERVABLE": {
-      "status": "PENDING"
-    },
-    "PROOF_RECEIPT_BOUND": {
-      "status": "PENDING"
-    },
-    "AUTHORITY_BOUND": {
-      "status": "PENDING"
-    },
-    "PROJECTION_TRUTH_CLOSED": {
-      "status": "PASS",
-      "evidence": "README and machine state describe implemented-but-unpromoted boundary"
-    },
-    "CANONICAL_POSITION_RESOLVED": {
-      "status": "PENDING"
-    },
-    "EVOLUTION_CURSOR_DEFINED": {
-      "status": "PASS",
-      "evidence": "next:fresh_current_head_proof"
-    }
+    "IDENTITY_RESOLVED": {"status": "PASS", "evidence": "github GlacierEQ/salesforce-crm-action-authority"},
+    "PROBLEM_VERIFIED": {"status": "PASS", "evidence": "README autonomous CRM action governance bottleneck"},
+    "TARGET_CONTRACT_FROZEN": {"status": "PASS", "evidence": "machine/target-contract.json v2"},
+    "DONOR_PLAN_RESOLVED": {"status": "PASS", "evidence": "fail-closed canonicalization and external authority semantics"},
+    "VERTICAL_SLICE_ALIVE": {"status": "PASS", "evidence": "real authority evaluator + direct sandbox operate flow"},
+    "CENTRAL_MECHANISM_PRESENT": {"status": "PASS", "evidence": "scoped one-time grants + reverse-operation receipts + no-send default"},
+    "DETERMINISTIC_PROOF_GREEN": {"status": "PASS", "evidence": "machine/implementation-proof.json source_sha=0f81c93c94bfbf6cecf050d6b782ab7473b74bb2bddec8559506d38f29d1d4a6"},
+    "ADVERSARIAL_SURVIVAL": {"status": "PASS", "evidence": "10 domain adversarial cases in tests/test_adversarial.py"},
+    "OPERABLE_AND_OBSERVABLE": {"status": "PASS", "evidence": "scripts/operate.py PASS with update/refuse/send scenarios"},
+    "PROOF_RECEIPT_BOUND": {"status": "PASS", "evidence": "sanitized machine/proof_receipt.json bound to current source tree"},
+    "AUTHORITY_BOUND": {"status": "PENDING", "evidence": "must be supplied by external authority; no leaf-local secret"},
+    "PROJECTION_TRUTH_CLOSED": {"status": "PASS", "evidence": "README, capabilities, contract, proof, and machine state agree"},
+    "CANONICAL_POSITION_RESOLVED": {"status": "PENDING"},
+    "EVOLUTION_CURSOR_DEFINED": {"status": "PASS", "evidence": "next:external_authority_and_estate_position_only"}
   },
   "history": [
     {
-      "at": "2026-08-10T14:19Z",
+      "at": "2026-08-10",
       "from": "PROMOTED",
       "to": "IMPLEMENTED",
       "gate": "PROMOTION_INVARIANT",
-      "result": "REVOKED_STALE_SCAFFOLD_PROMOTION",
-      "note": "Wave C generic scaffold promotion is not valid implementation proof; CRM action authority is now bodybuilt and requires fresh current-head proof."
+      "result": "REVOKED_STALE_SCAFFOLD_PROMOTION"
+    },
+    {
+      "at": "2026-08-10",
+      "from": "IMPLEMENTED",
+      "to": "PROOF_REPRODUCED",
+      "gate": "CURRENT_SOURCE_BOUND_PROOF",
+      "result": "PASS",
+      "note": "behavioral=8; adversarial=10; operate=PASS; source_sha=0f81c93c94bfbf6cecf050d6b782ab7473b74bb2bddec8559506d38f29d1d4a6"
     }
   ],
   "prior_state_ref": {
@@ -71,11 +42,12 @@
   },
   "contract_ref": "machine/target-contract.json",
   "scores_ref": "machine/excellence-scores.json",
-  "evolution_cursor": "next:fresh_behavioral_adversarial_operate_proof",
+  "implementation_proof_ref": "machine/implementation-proof.json",
+  "evolution_cursor": "next:external_promotion_authority_and_canonical_position",
   "wave": {
     "id": "WAVE-C-2026-08-10",
     "group": "C",
-    "phase": "BODYBUILT_IMPLEMENTED",
+    "phase": "PROOF_REPRODUCED",
     "prior_promotion_revoked": true,
     "policy": "glaciereq.repo-excellence.promotion-policy.v2"
   },
@@ -83,7 +55,6 @@
   "scaffold": false,
   "promotion_eligible": false,
   "promotion_blockers": [
-    "CURRENT_HEAD_IMPLEMENTATION_PROOF_PENDING",
     "EXTERNAL_PROMOTION_AUTHORITY_PENDING",
     "CANONICAL_POSITION_RESOLVED"
   ]

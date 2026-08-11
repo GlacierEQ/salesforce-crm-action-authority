@@ -1,12 +1,28 @@
 {
-  "schema": "glaciereq.repo-capabilities.v1",
+  "schema": "glaciereq.repo-capabilities.v2",
   "repository": "GlacierEQ/salesforce-crm-action-authority",
   "capabilities": [
     {
       "id": "crm-action-authority",
       "name": "CRM Action Authority",
-      "status": "SCAFFOLD",
-      "module": "src/crm_action_authority.py"
+      "status": "PROVEN",
+      "module": "src/crm_action_authority.py",
+      "implementation_proof_ref": "machine/implementation-proof.json",
+      "guarantees": [
+        "actor and workflow-subject binding",
+        "object/action/field capability attenuation",
+        "activation and expiry enforcement",
+        "one-time nonce replay refusal",
+        "reverse-operation receipts for reversible mutations",
+        "no-send default with explicit irreversible authority",
+        "deterministic canonical decision receipts",
+        "fail-closed non-finite and unsupported payload handling"
+      ]
     }
-  ]
+  ],
+  "authority_model": {
+    "issuer": "external-crm-action-authority",
+    "leaf_mints_promotion_authority": false,
+    "public_signing_secret_present": false
+  }
 }

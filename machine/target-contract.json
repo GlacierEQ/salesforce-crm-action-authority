@@ -5,19 +5,15 @@
     "family": "elite-estate"
   },
   "current": {
-    "state": "IMPLEMENTED",
+    "state": "PROOF_REPRODUCED",
     "implemented": true,
-    "tested": false,
+    "tested": true,
+    "proof_reproduced": true,
     "deployed": false
   },
   "mechanism": {
     "name": "CRM Action Authority",
-    "actions": [
-      "CREATE",
-      "UPDATE",
-      "DELETE",
-      "SEND_MESSAGE"
-    ],
+    "actions": ["CREATE", "UPDATE", "DELETE", "SEND_MESSAGE"],
     "grant_contract": [
       "actor-bound",
       "subject-bound",
@@ -44,10 +40,20 @@
     "non-canonical payloads fail closed",
     "promotion authority is external to the public leaf"
   ],
+  "proof": {
+    "implementation_proof_ref": "machine/implementation-proof.json",
+    "source_sha": "0f81c93c94bfbf6cecf050d6b782ab7473b74bb2bddec8559506d38f29d1d4a6",
+    "behavioral_cases": 8,
+    "adversarial_cases": 10,
+    "operate": "PASS"
+  },
   "promotion": {
     "require_current_head_implementation_proof": true,
+    "current_head_implementation_proof": "PASS",
     "require_external_authority": true,
-    "require_canonical_position": true
+    "external_authority": "PENDING",
+    "require_canonical_position": true,
+    "canonical_position": "PENDING"
   },
   "nonclaims": [
     "no Salesforce affiliation",

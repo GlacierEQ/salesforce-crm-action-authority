@@ -1,0 +1,41 @@
+{
+  "schema": "glaciereq.machine-architecture.v1",
+  "repository": "GlacierEQ/salesforce-crm-action-authority",
+  "mechanism": "CRM Action Authority",
+  "boundary": "authorization-before-side-effect",
+  "pipeline": [
+    "canonicalize",
+    "bind_actor",
+    "bind_workflow_subject",
+    "verify_external_issuer",
+    "attenuate_object_scope",
+    "attenuate_action_scope",
+    "validate_activation_and_expiry",
+    "reject_nonce_replay",
+    "attenuate_field_scope",
+    "classify_irreversibility",
+    "construct_reverse_operation",
+    "emit_deterministic_receipt"
+  ],
+  "action_classes": {
+    "CREATE": {"reversible": true, "reverse": "DELETE"},
+    "UPDATE": {"reversible": true, "reverse": "UPDATE(before-image)"},
+    "DELETE": {"reversible": true, "reverse": "CREATE(before-image)"},
+    "SEND_MESSAGE": {"reversible": false, "requires_explicit_irreversible_authority": true}
+  },
+  "authority": {
+    "required_issuer": "external-crm-action-authority",
+    "scopes": ["actor", "workflow_subject", "object", "action", "field", "time", "nonce"],
+    "public_leaf_can_mint_promotion_authority": false
+  },
+  "receipt": {
+    "digest": "sha256(canonical decision inputs)",
+    "canonicalization": "sorted JSON; finite numbers only; string map keys; unsupported types refused"
+  },
+  "reference_limitations": [
+    "nonce consumption is process-local",
+    "no vendor API side effects",
+    "no production credential handling",
+    "external grant issuance/revocation is out of leaf boundary"
+  ]
+}
