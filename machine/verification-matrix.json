@@ -1,0 +1,29 @@
+{
+  "schema": "glaciereq.verification-matrix.v1",
+  "repository": "GlacierEQ/salesforce-crm-action-authority",
+  "behavioral_cases": 8,
+  "adversarial_cases": 10,
+  "controls": [
+    {"threat": "missing authority", "test": "test_missing_grant_refuses"},
+    {"threat": "field privilege expansion", "test": "test_field_outside_grant_refuses"},
+    {"threat": "unrecoverable update", "test": "test_update_without_before_image_refuses_because_reverse_is_not_constructible"},
+    {"threat": "grant replay", "test": "test_grant_nonce_is_one_time"},
+    {"threat": "implicit irreversible send", "test": "test_external_send_requires_explicit_irreversible_authority"},
+    {"threat": "actor grant borrowing", "test": "test_wrong_actor_cannot_borrow_grant"},
+    {"threat": "workflow grant borrowing", "test": "test_wrong_subject_cannot_borrow_grant"},
+    {"threat": "object scope expansion", "test": "test_wrong_object_cannot_borrow_grant"},
+    {"threat": "action scope expansion", "test": "test_wrong_action_cannot_borrow_grant"},
+    {"threat": "expired capability", "test": "test_expired_grant_fails_closed"},
+    {"threat": "future capability", "test": "test_future_grant_fails_closed"},
+    {"threat": "non-canonical numeric payload", "test": "test_non_finite_payload_is_rejected"},
+    {"threat": "unrecoverable delete", "test": "test_delete_requires_before_image_and_explicit_delete_scope"},
+    {"threat": "hidden/incomplete send", "test": "test_send_cannot_hide_missing_recipient"},
+    {"threat": "leaf-local issuer spoofing", "test": "test_wrong_issuer_fails_closed"},
+    {"threat": "receipt collision across changed inputs", "test": "test_different_changes_bind_different_receipt_digests"}
+  ],
+  "direct_operate_scenarios": [
+    "scoped Lead status update -> ALLOW with reverse UPDATE",
+    "external message without grant -> REFUSE",
+    "explicit one-time irreversible send grant -> ALLOW and non-reversible"
+  ]
+}

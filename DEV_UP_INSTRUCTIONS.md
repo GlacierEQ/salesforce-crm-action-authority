@@ -1,42 +1,39 @@
 # Engineering Handoff — CRM Action Authority
 
-The core CRM action-authority mechanism is implemented. This document defines the remaining proof and integration work without changing the truth boundary.
+## Current phase
 
-## Implemented now
+`PROOF_REPRODUCED` is the intended repository-local completion state after the source-bound finalizer and CI pass.
 
-- deterministic canonical payload binding
-- actor / subject / object / action grant scoping
-- field-level mutation scopes
-- issuance, expiry, and one-time nonce enforcement
-- update/delete before-image requirements
-- reverse-operation receipts for reversible mutations
-- no-send default for external messaging
-- explicit irreversible authorization for `SEND_MESSAGE`
-- fail-closed handling of unsupported and non-finite payload values
-- direct operate surface plus behavioral and adversarial tests
+The portfolio mechanism is no longer a scaffold. It implements deterministic CRM action authorization with scoped external grants, replay prevention, reverse-operation receipts, explicit irreversible-send authority, and fail-closed canonicalization.
 
-## Invariants to preserve
+## Preserve these invariants
 
-1. A public leaf must never mint its own promotion authority.
-2. External messaging must never become an implicit side effect of a CRM update.
-3. A field omitted from the grant is not writable.
-4. A consumed nonce is never reusable.
-5. UPDATE and DELETE cannot be admitted if the reverse operation cannot be reconstructed.
-6. Unsupported payload types must fail closed; never restore `json.dumps(..., default=str)`.
-7. The repository must remain explicit about its independent, non-affiliated status.
+1. No grant means no mutation.
+2. Grants bind actor, workflow subject, object, action, fields, time window, and one-time nonce.
+3. UPDATE and DELETE are inadmissible when a reverse operation cannot be constructed from before-state.
+4. SEND_MESSAGE is an explicit irreversible class and requires `allow_irreversible=true`.
+5. Non-finite values and unsupported canonical types fail closed.
+6. Decision receipts remain deterministic and input-bound.
+7. The public leaf must never mint its own promotion authority or embed a reusable signing secret.
+8. No Salesforce affiliation, proprietary implementation, production deployment, or customer-impact claim may be introduced without independent evidence.
 
-## Next proof gate
+## Proof surfaces
 
-Generate `machine/implementation-proof.json` only from the current merged source head, after the repository workflow proves:
+- `tests/test_crm_action_authority.py` — behavioral contract
+- `tests/test_adversarial.py` — attack/fail-closed contract
+- `scripts/operate.py` — direct end-to-end sandbox decision flow
+- `machine/implementation-proof.json` — source-tree-bound proof
+- `machine/proof_receipt.json` — sanitized CI receipt
+- `machine/operability_receipt.json` — direct operate receipt
+- `machine/verification-matrix.json` — threat-to-test mapping
+- `ARCHITECTURE.md` — expert design and production-boundary analysis
 
-- behavioral cases >= 3
-- adversarial cases >= 1
-- direct `scripts/operate.py` success
-- no remaining implementation-placeholder markers
-- exact repository/source binding
+## Remaining gates are estate/deployment gates, not missing portfolio implementation
 
-That receipt may make the implementation eligible for the Helix promotion assessment, but does not itself grant promotion authority.
+- external authenticated promotion authority
+- canonical estate-position resolution
+- production-grade distributed nonce store
+- transactional coupling to actual downstream CRM side effects
+- vendor/environment adapters and organization-specific approval policy
 
-## External integration gate
-
-A real promotion/signing service should inject authority claims from outside this repository. The public repository may verify claims, but must not contain the production signing secret.
+Do not represent those external boundaries as already deployed. Do not downgrade the implemented mechanism back into a generic evaluator or scaffold.
