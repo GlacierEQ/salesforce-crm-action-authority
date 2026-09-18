@@ -3,20 +3,61 @@
   "repository": "GlacierEQ/salesforce-crm-action-authority",
   "principal_state": "PROOF_REPRODUCED",
   "gates": {
-    "IDENTITY_RESOLVED": {"status": "PASS", "evidence": "github GlacierEQ/salesforce-crm-action-authority"},
-    "PROBLEM_VERIFIED": {"status": "PASS", "evidence": "README autonomous CRM action governance bottleneck"},
-    "TARGET_CONTRACT_FROZEN": {"status": "PASS", "evidence": "machine/target-contract.json v2"},
-    "DONOR_PLAN_RESOLVED": {"status": "PASS", "evidence": "fail-closed canonicalization and external authority semantics"},
-    "VERTICAL_SLICE_ALIVE": {"status": "PASS", "evidence": "real authority evaluator + direct sandbox operate flow"},
-    "CENTRAL_MECHANISM_PRESENT": {"status": "PASS", "evidence": "scoped one-time grants + reverse-operation receipts + no-send default"},
-    "DETERMINISTIC_PROOF_GREEN": {"status": "PASS", "evidence": "machine/implementation-proof.json source_sha=0f81c93c94bfbf6cecf050d6b782ab7473b74bb2bddec8559506d38f29d1d4a6"},
-    "ADVERSARIAL_SURVIVAL": {"status": "PASS", "evidence": "10 domain adversarial cases in tests/test_adversarial.py"},
-    "OPERABLE_AND_OBSERVABLE": {"status": "PASS", "evidence": "scripts/operate.py PASS with update/refuse/send scenarios"},
-    "PROOF_RECEIPT_BOUND": {"status": "PASS", "evidence": "sanitized machine/proof_receipt.json bound to current source tree"},
-    "AUTHORITY_BOUND": {"status": "PENDING", "evidence": "must be supplied by external authority; no leaf-local secret"},
-    "PROJECTION_TRUTH_CLOSED": {"status": "PASS", "evidence": "README, capabilities, contract, proof, and machine state agree"},
-    "CANONICAL_POSITION_RESOLVED": {"status": "PENDING"},
-    "EVOLUTION_CURSOR_DEFINED": {"status": "PASS", "evidence": "next:external_authority_and_estate_position_only"}
+    "IDENTITY_RESOLVED": {
+      "status": "PASS",
+      "evidence": "github GlacierEQ/salesforce-crm-action-authority"
+    },
+    "PROBLEM_VERIFIED": {
+      "status": "PASS",
+      "evidence": "README autonomous CRM action governance bottleneck"
+    },
+    "TARGET_CONTRACT_FROZEN": {
+      "status": "PASS",
+      "evidence": "machine/target-contract.json v2"
+    },
+    "DONOR_PLAN_RESOLVED": {
+      "status": "PASS",
+      "evidence": "fail-closed canonicalization and external authority semantics"
+    },
+    "VERTICAL_SLICE_ALIVE": {
+      "status": "PASS",
+      "evidence": "real authority evaluator + direct sandbox operate flow"
+    },
+    "CENTRAL_MECHANISM_PRESENT": {
+      "status": "PASS",
+      "evidence": "scoped one-time grants + reverse-operation receipts + no-send default"
+    },
+    "DETERMINISTIC_PROOF_GREEN": {
+      "status": "PASS",
+      "evidence": "machine/implementation-proof.json source_sha=0f81c93c94bfbf6cecf050d6b782ab7473b74bb2bddec8559506d38f29d1d4a6"
+    },
+    "ADVERSARIAL_SURVIVAL": {
+      "status": "PASS",
+      "evidence": "10 domain adversarial cases in tests/test_adversarial.py"
+    },
+    "OPERABLE_AND_OBSERVABLE": {
+      "status": "PASS",
+      "evidence": "scripts/operate.py PASS with update/refuse/send scenarios"
+    },
+    "PROOF_RECEIPT_BOUND": {
+      "status": "PASS",
+      "evidence": "sanitized machine/proof_receipt.json bound to current source tree"
+    },
+    "AUTHORITY_BOUND": {
+      "status": "PENDING",
+      "evidence": "must be supplied by external authority; no leaf-local secret"
+    },
+    "PROJECTION_TRUTH_CLOSED": {
+      "status": "PASS",
+      "evidence": "README, capabilities, contract, proof, and machine state agree"
+    },
+    "CANONICAL_POSITION_RESOLVED": {
+      "status": "PENDING"
+    },
+    "EVOLUTION_CURSOR_DEFINED": {
+      "status": "PASS",
+      "evidence": "next:external_authority_and_estate_position_only"
+    }
   },
   "history": [
     {
@@ -57,5 +98,12 @@
   "promotion_blockers": [
     "EXTERNAL_PROMOTION_AUTHORITY_PENDING",
     "CANONICAL_POSITION_RESOLVED"
-  ]
+  ],
+  "operator_contract": "OPERATOR_CONTRACT.md",
+  "gate_policy": {
+    "mode": "enrichment",
+    "stoppers_forbidden": true,
+    "promotion_ladder_forbidden": true,
+    "note": "Helix PROMOTED/demoted ladder retired; checks enrich only."
+  }
 }
